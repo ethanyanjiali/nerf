@@ -117,6 +117,21 @@ def init_nerf_model(D=8, W=256, input_ch=3, input_ch_views=3, output_ch=4, skips
     model = tf.keras.Model(inputs=inputs, outputs=outputs)
     return model
 
+def init_denoiser(width, height):
+    inputs = tf.keras.Input(shape=(height, width, 3))
+    
+    x = tf.keras.layers.Conv2D(64, 3, padding='same')(inputs)
+    x = tf.keras.layers.ReLU()(x)
+    
+    for i in range(18):
+        x = tf.keras.layers.Conv2D(64, 3, padding='same', use_bias=False)(inputs)
+        x = tf.keras.layers.BatchNormalization()(x)
+        x = tf.keras.layers.ReLU()(x)
+    
+    y = tf.keras.layers.Conv2D(64, 3, padding='same')(x)
+    
+    model = tf.keras.Model(inputs=inputs, outputs=y)
+    return model
 
 # Ray helpers
 
